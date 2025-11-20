@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سامانه بانکی پیشرفته</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --gray: #95a5a6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .page {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 20px auto;
+            min-height: 80vh;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .btn-primary { background: var(--secondary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-light { background: var(--light); color: var(--dark); }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .form-group {
+            margin: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin: 15px;
+            padding: 20px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .card-balance {
+            border-left-color: var(--success);
+        }
+        
+        .card-transfer {
+            border-left-color: var(--warning);
+        }
+        
+        .card-admin {
+            border-left-color: var(--danger);
+        }
+        
+        .card h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-size: 1.4em;
+        }
+        
+        .balance-display {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--success);
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .user-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px;
+        }
+        
+        .user-item {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .user-item h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .note-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid var(--warning);
+        }
+        
+        .note-item .delete-note {
+            float: left;
+            color: var(--danger);
+            cursor: pointer;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--secondary), #1a56db);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- صفحه ورود -->
+        <div id="login-page" class="page active">
+            <div class="header">
+                <h1>🏦 سامانه بانکی</h1>
+                <p>ورود به حساب کاربری</p>
+            </div>
+            <div class="form-group">
+                <label for="username">نام کاربری:</label>
+                <input type="text" id="username" class="form-control" placeholder="نام کاربری خود را وارد کنید">
+            </div>
+            <div class="form-group">
+                <label for="password">رمز عبور:</label>
+                <input type="password" id="password" class="form-control" placeholder="رمز عبور خود را وارد کنید">
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-primary" onclick="login()">ورود</button>
+                <button class="btn btn-light" onclick="showPage('register-page')">ثبت نام</button>
+            </div>
+            <div id="login-error" style="color: var(--danger); text-align: center; margin: 15px; font-weight: bold;"></div>
+        </div>
+
+        <!-- صفحه ثبت نام -->
+        <div id="register-page" class="page">
+            <div class="header">
+                <h1>📝 ثبت نام جدید</h1>
+                <p>ایجاد حساب کاربری</p>
+            </div>
+            <div class="form-group">
+                <label for="reg-username">نام کاربری:</label>
+                <input type="text" id="reg-username" class="form-control" placeholder="نام کاربری">
+            </div>
+            <div class="form-group">
+                <label for="reg-password">رمز عبور:</label>
+                <input type="password" id="reg-password" class="form-control" placeholder="رمز عبور">
+            </div>
+            <div class="form-group">
+                <label for="reg-fullname">نام کامل:</label>
+                <input type="text" id="reg-fullname" class="form-control" placeholder="نام و نام خانوادگی">
+            </div>
+            <div class="form-group">
+                <label for="reg-phone">شماره تلفن:</label>
+                <input type="tel" id="reg-phone" class="form-control" placeholder="09123456789">
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-success" onclick="register()">ثبت نام</button>
+                <button class="btn btn-light" onclick="showPage('login-page')">بازگشت به ورود</button>
+            </div>
+            <div id="register-error" style="color: var(--danger); text-align: center; margin: 15px; font-weight: bold;"></div>
+        </div>
+
+        <!-- داشبورد کاربر معمولی -->
+        <div id="user-dashboard" class="page">
+            <div class="header">
+                <button class="btn btn-danger logout-btn" onclick="logout()">خروج</button>
+                <h1>🏠 داشبورد کاربر</h1>
+                <p id="user-welcome">خوشحالم که اینجا هستم!</p>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h3>موجودی کل</h3>
+                    <div class="value" id="total-balance">0</div>
+                    <div>تومان</div>
+                </div>
+                <div class="stat-card">
+                    <h3>کارت‌های فعال</h3>
+                    <div class="value" id="active-cards">0</div>
+                    <div>عدد</div>
+                </div>
+                <div class="stat-card">
+                    <h3>یادداشت‌ها</h3>
+                    <div class="value" id="note-count">0</div>
+                    <div>عدد</div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-primary" onclick="showPage('cards-page')">کارت‌های من</button>
+                <button class="btn btn-success" onclick="showPage('transfer-page')">انتقال وجه</button>
+                <button class="btn btn-warning" onclick="showPage('salary-page')">دریافت حقوق</button>
+                <button class="btn btn-light" onclick="showPage('notes-page')">یادداشت‌ها</button>
+            </div>
+        </div>
+
+        <!-- صفحه کارت‌ها -->
+        <div id="cards-page" class="page">
+            <div class="header">
+                <button class="btn btn-danger logout-btn" onclick="logout()">خروج</button>
+                <h1>💳 کارت‌های بانکی</h1>
+                <p>مدیریت کارت‌های شما</p>
+            </div>
+            <div id="cards-container">
+                <!-- کارت‌ها اینجا لود می‌شوند -->
+            </div>
+            <div style="text-align: center; margin: 20px;">
+                <button class="btn btn-primary" onclick="showPage('user-dashboard')">بازگشت به داشبورد</button>
+            </div>
+        </div>
+
+        <!-- صفحه انتقال وجه -->
+        <div id="transfer-page" class="page">
+            <div class="header">
+                <button class="btn btn-danger logout-btn" onclick="logout()">خروج</button>
+                <h1>🔄 انتقال وجه</h1>
+                <p>کارت به کارت</p>
+            </div>
+            <div class="form-group">
+                <label for="from-card">کارت مبدأ:</label>
+                <select id="from-card" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label for="to-card">کارت مقصد:</label>
+                <select id="to-card" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label for="transfer-amount">مبلغ انتقال:</label>
+                <input type="number" id="transfer-amount" class="form-control" placeholder="مبلغ را وارد کنید">
+            </div>
+            <div class="form-group">
+                <label for="transfer-desc">توضیحات:</label>
+                <input type="text" id="transfer-desc" class="form-control" placeholder="توضیحات انتقال">
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-success" onclick="transferMoney()">انتقال وجه</button>
+                <button class="btn btn-light" onclick="showPage('user-dashboard')">انصراف</button>
+            </div>
+            <div id="transfer-result" style="text-align: center; margin: 15px; font-weight: bold;"></div>
+        </div>
+
+        <!-- صفحه حقوق -->
+        <div id="salary-page" class="page">
+            <div class="header">
+                <button class="btn btn-danger logout-btn" onclick="logout()">خروج</button>
+                <h1>💰 دریافت حقوق</h1>
+                <p>مدیریت حقوق شما</p>
+            </div>
+            <div class="card">
+                <h3>وضعیت حقوق فعلی</h3>
+                <div style="margin: 20px 0;">
+                    <p><strong>حقوق ماهانه:</strong> <span id="monthly-salary">0</span> تومان</p>
+                    <p><strong>حقوق دریافت شده:</strong> <span id="received-salary">0</span> تومان</p>
+                    <p><strong>حقوق باقیمانده:</strong> <span id="remaining-salary">0</span> تومان</p>
+                </div>
+                <button class="btn btn-success" onclick="receiveSalary()">دریافت حقوق ماه جاری</button>
+            </div>
+            <div style="text-align: center; margin: 20px;">
+                <button class="btn btn-primary" onclick="showPage('user-dashboard')">بازگشت به داشبورد</button>
+            </div>
+        </div>
+
+        <!-- صفحه یادداشت‌ها -->
+        <div id="notes-page" class="page">
+            <div class="header">
+                <button class="btn btn-danger logout-btn" onclick="logout()">خروج</button>
+                <h1>📝 یادداشت‌ها</h1>
+                <p>مدیریت یادداشت‌های شخصی</p>
+            </div>
+            <div class="form-group">
+                <label for="new-note">یادداشت جدید:</label>
+                <textarea id="new-note" class="form-control" rows="4" placeholder="متن یادداشت خود را وارد کنید..."></textarea>
+            </div>
+            <div style="text-align: center; margin: 10px;">
+                <button class="btn btn-primary" onclick="addNote()">افزودن یادداشت</button>
+            </div>
+            <div id="notes-container">
+                <!-- یادداشت‌ها اینجا لود می‌شوند -->
+            </div>
+            <div style="text-align: center; margin: 20px;">
+                <button class="btn btn-light" onclick="showPage('user-dashboard')">بازگشت</button>
+            </div>
+        </div>
+
+        <!-- داشبورد ادمین -->
+        <div id="admin-dashboard" class="page">
+            <div class="header">
+                <button class="btn btn-danger logout-btn" onclick="logout()">خروج</button>
+                <h1>👑 داشبورد ادمین</h1>
+                <p>مدیریت کامل سیستم</p>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-warning" onclick="showPage('admin-users')">مدیریت کاربران</button>
+                <button class="btn btn-danger" onclick="showPage('admin-managers')">مدیران</button>
+                <button class="btn btn-success" onclick="showPage('admin-cards')">مدیریت کارت‌ها</button>
+                <button class="btn btn-primary" onclick="showPage('admin-salaries')">مدیریت حقوق</button>
+            </div>
+        </div>
+
+        <!-- صفحه مدیریت کاربران ادمین -->
+        <div id="admin-users" class="page">
+            <div class="header">
+                <button class="btn btn-danger logout-btn" onclick="logout()">خروج</button>
+                <h1>👥 مدیریت کاربران</h1>
+                <p>لیست تمام کاربران سیستم</p>
+            </div>
+            <div class="form-group">
+                <label for="search-user">جستجوی کاربر:</label>
+                <input type="text" id="search-user" class="form-control" onkeyup="searchUsers()" placeholder="نام کاربری یا نام کامل را جستجو کنید">
+            </div>
+            <div id="users-container" class="user-list">
+                <!-- کاربران اینجا لود می‌شوند -->
+            </div>
+            <div style="text-align: center; margin: 20px;">
+                <button class="btn btn-light" onclick="showPage('admin-dashboard')">بازگشت به داشبورد</button>
+            </div>
+        </div>
+
+        <!-- صفحه مدیران ادمین -->
+        <div id="admin-managers" class="page">
+            <div class="header">
+                <button class="btn btn-danger logout-btn" onclick="logout()">خروج</button>
+                <h1>👨‍💼 مدیران سیستم</h1>
+                <p>افزودن و مدیریت مدیران</p>
+            </div>
+            <div class="form-group">
+                <label for="manager-username">نام کاربری مدیر:</label>
+                <input type="text" id="manager-username" class="form-control" placeholder="نام کاربری مدیر">
+            </div>
+            <div class="form-group">
+                <label for="manager-password">رمز عبور:</label>
+                <input type="password" id="manager-password" class="form-control" placeholder="رمز عبور مدیر">
+            </div>
+            <div class="form-group">
+                <label for="manager-fullname">نام کامل مدیر:</label>
+                <input type="text" id="manager-fullname" class="form-control" placeholder="نام کامل مدیر">
+            </div>
+            <div style="text-align: center; margin: 15px;">
+                <button class="btn btn-primary" onclick="addManager()">افزودن مدیر جدید</button>
+            </div>
+            <div id="managers-list">
+                <!-- لیست مدیران اینجا لود می‌شود -->
+            </div>
+            <div style="text-align: center; margin: 20px;">
+                <button class="btn btn-light" onclick="showPage('admin-dashboard')">بازگشت</button>
+            </div>
+        </div>
+
+        <!-- صفحه مدیریت کارت‌های ادمین -->
+        <div id="admin-cards" class="page">
+            <div class="header">
+                <button class="btn btn-danger logout-btn" onclick="logout()">خروج</button>
+                <h1>💳 مدیریت کارت‌ها</h1>
+                <p>مشاهده و ویرایش موجودی کارت‌ها</p>
+            </div>
+            <div class="form-group">
+                <label for="admin-card-select">انتخاب کارت:</label>
+                <select id="admin-card-select" class="form-control" onchange="loadCardDetails()"></select>
+            </div>
+            <div id="card-details" class="card card-admin">
+                <h3>جزئیات کارت</h3>
+                <div id="card-info">
+                    <!-- جزئیات کارت اینجا لود می‌شود -->
+                </div>
+                <div class="form-group">
+                    <label for="balance-change">تغییر موجودی:</label>
+                    <input type="number" id="balance-change" class="form-control" placeholder="مبلغ را وارد کنید (مثبت یا منفی)">
+                </div>
+                <div style="text-align: center; margin: 15px;">
+                    <button class="btn btn-success" onclick="updateBalance()">اعمال تغییرات</button>
+                </div>
+            </div>
+            <div style="text-align: center; margin: 20px;">
+                <button class="btn btn-light" onclick="showPage('admin-dashboard')">بازگشت</button>
+            </div>
+        </div>
+
+        <!-- صفحه مدیریت حقوق ادمین -->
+        <div id="admin-salaries" class="page">
+            <div class="header">
+                <button class="btn btn-danger logout-btn" onclick="logout()">خروج</button>
+                <h1>💰 مدیریت حقوق</h1>
+                <p>تعیین حقوق کاربران</p>
+            </div>
+            <div class="form-group">
+                <label for="salary-user">انتخاب کاربر:</label>
+                <select id="salary-user" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label for="monthly-salary-amount">حقوق ماهانه:</label>
+                <input type="number" id="monthly-salary-amount" class="form-control" placeholder="مبلغ حقوق ماهانه">
+            </div>
+            <div style="text-align: center; margin: 15px;">
+                <button class="btn btn-primary" onclick="setUserSalary()">ثبت حقوق</button>
+            </div>
+            <div id="salaries-list">
+                <!-- لیست حقوق کاربران اینجا لود می‌شود -->
+            </div>
+            <div style="text-align: center; margin: 20px;">
+                <button class="btn btn-light" onclick="showPage('admin-dashboard')">بازگشت</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // متغیرهای سراسری
+        let currentUser = null;
+        let users = [];
+        let cards = [];
+        let notes = [];
+        let salaries = {};
+
+        // تابع نمایش صفحه
+        function showPage(pageId) {
+            // پنهان کردن تمام صفحات
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            // نمایش صفحه انتخاب شده
+            document.getElementById(pageId).classList.add('active');
+            
+            // اگر صفحه داشبورد کاربر است، داده‌ها را بروزرسانی کن
+            if (pageId === 'user-dashboard' && currentUser) {
+                loadDashboardData();
+            }
+            // اگر صفحه مدیریت کاربران است، لیست کاربران را بروزرسانی کن
+            if (pageId === 'admin-users') {
+                loadUsersList();
+            }
+            // اگر صفحه یادداشت‌ها است، لیست یادداشت‌ها را بروزرسانی کن
+            if (pageId === 'notes-page') {
+                loadNotes();
+            }
+            // اگر صفحه مدیریت کارت‌های ادمین است، لیست کارت‌ها را بروزرسانی کن
+            if (pageId === 'admin-cards') {
+                loadAdminCards();
+            }
+            // اگر صفحه کارت‌ها است، کارت‌های کاربر را بروزرسانی کن
+            if (pageId === 'cards-page' && currentUser) {
+                loadUserCards();
+            }
+            // اگر صفحه انتقال وجه است، کارت‌ها را بروزرسانی کن
+            if (pageId === 'transfer-page' && currentUser) {
+                loadTransferCards();
+            }
+            // اگر صفحه مدیران است، لیست مدیران را بروزرسانی کن
+            if (pageId === 'admin-managers') {
+                loadManagersList();
+            }
+            // اگر صفحه مدیریت حقوق است، لیست کاربران را بروزرسانی کن
+            if (pageId === 'admin-salaries') {
+                loadSalaryUsers();
+            }
+        }
+
+        // تابع ورود
+        function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorElement = document.getElementById('login-error');
+            
+            if (!username || !password) {
+                errorElement.textContent = 'نام کاربری و رمز عبور الزامی هستند!';
+                return;
+            }
+            
+            loadFromStorage();
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                errorElement.textContent = '';
+                
+                // بررسی نقش کاربر
+                if (user.role === 'admin') {
+                    showPage('admin-dashboard');
+                } else if (user.role === 'manager') {
+                    showPage('admin-dashboard'); // مدیران هم به داشبورد ادمین دسترسی دارند
+                } else {
+                    showPage('user-dashboard');
+                }
+                
+                // بروزرسانی پیام خوشامد
+                document.getElementById('user-welcome').textContent = `خوشحالم که اینجا هستم، ${user.fullname}!`;
+            } else {
+                errorElement.textContent = 'نام کاربری یا رمز عبور اشتباه است!';
+            }
+        }
+
+        // تابع ثبت نام
+        function register() {
+            const username = document.getElementById('reg-username').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            const fullname = document.getElementById('reg-fullname').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const errorElement = document.getElementById('register-error');
+            
+            if (!username || !password || !fullname || !phone) {
+                errorElement.textContent = 'تمام فیلدها الزامی هستند!';
+                return;
+            }
+            
+            if (username.length < 3) {
+                errorElement.textContent = 'نام کاربری باید حداقل 3 کاراکتر باشد!';
+                return;
+            }
+            
+            if (password.length < 6) {
+                errorElement.textContent = 'رمز عبور باید حداقل 6 کاراکتر باشد!';
+                return;
+            }
+            
+            if (!/^\d{11}$/.test(phone)) {
+                errorElement.textContent = 'شماره تلفن باید 11 رقمی باشد!';
+                return;
+            }
+            
+            loadFromStorage();
+            
+            // بررسی تکراری بودن نام کاربری
+            if (users.some(u => u.username === username)) {
+                errorElement.textContent = 'این نام کاربری قبلاً ثبت شده است!';
+                return;
+            }
+            
+            // ایجاد کاربر جدید
+            const newUser = {
+                id: Date.now(),
+                username: username,
+                password: password,
+                fullname: fullname,
+                phone: phone,
+                role: 'user',
+                createdAt: new Date().toISOString()
+            };
+            
+            users.push(newUser);
+            
+            // ایجاد کارت پیش‌فرض برای کاربر
+            createDefaultCard(newUser.id);
+            
+            saveToStorage();
+            
+            errorElement.textContent = 'ثبت نام با موفقیت انجام شد! حالا می‌توانید وارد شوید.';
+            document.getElementById('reg-username').value = '';
+            document.getElementById('reg-password').value = '';
+            document.getElementById('reg-fullname').value = '';
+            document.getElementById('reg-phone').value = '';
+        }
+
+        // ایجاد کارت پیش‌فرض
+        function createDefaultCard(userId) {
+            const cardNumber = '****-****-****-' + Math.floor(1000 + Math.random() * 9000);
+            const newCard = {
+                id: Date.now(),
+                userId: userId,
+                cardNumber: cardNumber,
+                balance: 1000000, // موجودی اولیه 1 میلیون تومان
+                cardName: 'کارت پیش‌فرض',
+                isActive: true,
+                createdAt: new Date().toISOString()
+            };
+            
+            cards.push(newCard);
+            saveToStorage();
+        }
+
+        // بارگذاری داده‌ها از localStorage
+        function loadFromStorage() {
+            if (localStorage.getItem('bankUsers')) {
+                users = JSON.parse(localStorage.getItem('bankUsers'));
+            }
+            if (localStorage.getItem('bankCards')) {
+                cards = JSON.parse(localStorage.getItem('bankCards'));
+            }
+            if (localStorage.getItem('bankNotes')) {
+                notes = JSON.parse(localStorage.getItem('bankNotes'));
+            }
+            if (localStorage.getItem('bankSalaries')) {
+                salaries = JSON.parse(localStorage.getItem('bankSalaries')) || {};
+            }
+        }
+
+        // ذخیره داده‌ها در localStorage
+        function saveToStorage() {
+            localStorage.setItem('bankUsers', JSON.stringify(users));
+            localStorage.setItem('bankCards', JSON.stringify(cards));
+            localStorage.setItem('bankNotes', JSON.stringify(notes));
+            localStorage.setItem('bankSalaries', JSON.stringify(salaries));
+        }
+
+        // تابع خروج
+        function logout() {
+            currentUser = null;
+            showPage('login-page');
+        }
+
+        // بارگذاری داده‌های داشبورد
+        function loadDashboardData() {
+            if (!currentUser) return;
+            
+            // محاسبه موجودی کل
+            const userCards = cards.filter(c => c.userId === currentUser.id && c.isActive);
+            const totalBalance = userCards.reduce((sum, card) => sum + card.balance, 0);
+            
+            // بروزرسانی آمار
+            document.getElementById('total-balance').textContent = totalBalance.toLocaleString('fa-IR');
+            document.getElementById('active-cards').textContent = userCards.length;
+            
+            // تعداد یادداشت‌ها
+            const userNotes = notes.filter(n => n.userId === currentUser.id);
+            document.getElementById('note-count').textContent = userNotes.length;
+        }
+
+        // بارگذاری کارت‌های کاربر
+        function loadUserCards() {
+            if (!currentUser) return;
+            
+            const userCards = cards.filter(c => c.userId === currentUser.id);
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+            
+            if (userCards.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--gray);">شما هیچ کارتی ندارید!</div>';
+                return;
+            }
+            
+            userCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card card-balance';
+                cardElement.innerHTML = `
+                    <h3>${card.cardName}</h3>
+                    <p><strong>شماره کارت:</strong> ${card.cardNumber}</p>
+                    <p><strong>موجودی:</strong> ${card.balance.toLocaleString('fa-IR')} تومان</p>
+                    <p><strong>وضعیت:</strong> ${card.isActive ? 'فعال' : 'غیرفعال'}</p>
+                    <p><strong>تاریخ ایجاد:</strong> ${new Date(card.createdAt).toLocaleDateString('fa-IR')}</p>
+                `;
+                container.appendChild(cardElement);
+            });
+        }
+
+        // بارگذاری کارت‌ها برای انتقال وجه
+        function loadTransferCards() {
+            if (!currentUser) return;
+            
+            const fromSelect = document.getElementById('from-card');
+            const toSelect = document.getElementById('to-card');
+            
+            fromSelect.innerHTML = '';
+            toSelect.innerHTML = '';
+            
+            const userCards = cards.filter(c => c.userId === currentUser.id && c.isActive);
+            
+            userCards.forEach(card => {
+                const optionFrom = document.createElement('option');
+                optionFrom.value = card.id;
+                optionFrom.textContent = `${card.cardName} (${card.cardNumber}) - ${card.balance.toLocaleString('fa-IR')} تومان`;
+                
+                const optionTo = document.createElement('option');
+                optionTo.value = card.id;
+                optionTo.textContent = `${card.cardName} (${card.cardNumber})`;
+                
+                fromSelect.appendChild(optionFrom);
+                toSelect.appendChild(optionTo);
+            });
+        }
+
+        // انتقال وجه
+        function transferMoney() {
+            if (!currentUser) return;
+            
+            const fromCardId = parseInt(document.getElementById('from-card').value);
+            const toCardId = parseInt(document.getElementById('to-card').value);
+            const amount = parseInt(document.getElementById('transfer-amount').value);
+            const description = document.getElementById('transfer-desc').value.trim();
+            
+            const resultElement = document.getElementById('transfer-result');
+            
+            if (fromCardId === toCardId) {
+                resultElement.textContent = 'کارت مبدأ و مقصد نمی‌توانند یکسان باشند!';
+                resultElement.style.color = 'var(--danger)';
+                return;
+            }
+            
+            if (isNaN(amount) || amount <= 0) {
+                resultElement.textContent = 'مبلغ انتقال باید عددی مثبت باشد!';
+                resultElement.style.color = 'var(--danger)';
+                return;
+            }
+            
+            const fromCard = cards.find(c => c.id === fromCardId && c.userId === currentUser.id);
+            const toCard = cards.find(c => c.id === toCardId);
+            
+            if (!fromCard) {
+                resultElement.textContent = 'کارت مبدأ پیدا نشد!';
+                resultElement.style.color = 'var(--danger)';
+                return;
+            }
+            
+            if (!toCard) {
+                resultElement.textContent = 'کارت مقصد پیدا نشد!';
+                resultElement.style.color = 'var(--danger)';
+                return;
+            }
+            
+            if (fromCard.balance < amount) {
+                resultElement.textContent = 'موجودی کافی برای انتقال وجود ندارد!';
+                resultElement.style.color = 'var(--danger)';
+                return;
+            }
+            
+            // انجام انتقال
+            fromCard.balance -= amount;
+            toCard.balance += amount;
+            
+            // ذخیره تراکنش (اختیاری - می‌توانیم در آینده اضافه کنیم)
+            
+            saveToStorage();
+            loadDashboardData();
+            
+            resultElement.textContent = `انتقال ${amount.toLocaleString('fa-IR')} تومان با موفقیت انجام شد!`;
+            resultElement.style.color = 'var(--success)';
+            
+            // پاک کردن فیلدها
+            document.getElementById('transfer-amount').value = '';
+            document.getElementById('transfer-desc').value = '';
+        }
+
+        // بارگذاری یادداشت‌ها
+        function loadNotes() {
+            if (!currentUser) return;
+            
+            const userNotes = notes.filter(n => n.userId === currentUser.id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const container = document.getElementById('notes-container');
+            container.innerHTML = '';
+            
+            if (userNotes.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--gray);">شما هیچ یادداشتی ندارید.</div>';
+                return;
+            }
+            
+            userNotes.forEach(note => {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note-item';
+                noteElement.innerHTML = `
+                    <div class="delete-note" onclick="deleteNote(${note.id})">❌</div>
+                    <p><strong>تاریخ:</strong> ${new Date(note.createdAt).toLocaleString('fa-IR')}</p>
+                    <p>${note.content}</p>
+                `;
+                container.appendChild(noteElement);
+            });
+        }
+
+        // افزودن یادداشت
+        function addNote() {
+            if (!currentUser) return;
+            
+            const content = document.getElementById('new-note').value.trim();
+            
+            if (!content) {
+                alert('محتوای یادداشت نمی‌تواند خالی باشد!');
+                return;
+            }
+            
+            const newNote = {
+                id: Date.now(),
+                userId: currentUser.id,
+                content: content,
+                createdAt: new Date().toISOString()
+            };
+            
+            notes.push(newNote);
+            saveToStorage();
+            loadNotes();
+            
+            document.getElementById('new-note').value = '';
+        }
+
+        // حذف یادداشت
+        function deleteNote(noteId) {
+            if (confirm('آیا مطمئن هستید می‌خواهید این یادداشت را حذف کنید؟')) {
+                notes = notes.filter(n => n.id !== noteId);
+                saveToStorage();
+                loadNotes();
+            }
+        }
+
+        // بارگذاری لیست کاربران
+        function loadUsersList() {
+            const container = document.getElementById('users-container');
+            container.innerHTML = '';
+            
+            users.forEach(user => {
+                const userElement = document.createElement('div');
+                userElement.className = 'user-item';
+                userElement.innerHTML = `
+                    <h4>${user.fullname} (${user.username})</h4>
+                    <p><strong>نقش:</strong> ${user.role === 'admin' ? 'ادمین' : user.role === 'manager' ? 'مدیر' : 'کاربر'}</p>
+                    <p><strong>تلفن:</strong> ${user.phone}</p>
+                    <p><strong>تاریخ ثبت:</strong> ${new Date(user.createdAt).toLocaleDateString('fa-IR')}</p>
+                    <div style="margin-top: 10px;">
+                        <button class="btn btn-sm btn-warning" onclick="changeUserRole(${user.id}, 'manager')">مدیر کن</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">حذف</button>
+                    </div>
+                `;
+                container.appendChild(userElement);
+            });
+        }
+
+        // تغییر نقش کاربر
+        function changeUserRole(userId, newRole) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                user.role = newRole;
+                saveToStorage();
+                loadUsersList();
+                alert(`نقش کاربر ${user.fullname} به ${newRole === 'manager' ? 'مدیر' : 'ادمین'} تغییر کرد.`);
+            }
+        }
+
+        // حذف کاربر
+        function deleteUser(userId) {
+            if (confirm('آیا مطمئن هستید می‌خواهید این کاربر را حذف کنید؟ تمام داده‌های مرتبط حذف خواهد شد!')) {
+                // حذف کارت‌های کاربر
+                cards = cards.filter(c => c.userId !== userId);
+                // حذف یادداشت‌های کاربر
+                notes = notes.filter(n => n.userId !== userId);
+                // حذف کاربر
+                users = users.filter(u => u.id !== userId);
+                saveToStorage();
+                loadUsersList();
+                alert('کاربر با موفقیت حذف شد.');
+            }
+        }
+
+        // جستجوی کاربران
+        function searchUsers() {
+            const searchTerm = document.getElementById('search-user').value.toLowerCase();
+            const container = document.getElementById('users-container');
+            container.innerHTML = '';
+            
+            const filteredUsers = users.filter(user => 
+                user.username.toLowerCase().includes(searchTerm) || 
+                user.fullname.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredUsers.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--gray);">کاربری پیدا نشد.</div>';
+                return;
+            }
+            
+            filteredUsers.forEach(user => {
+                const userElement = document.createElement('div');
+                userElement.className = 'user-item';
+                userElement.innerHTML = `
+                    <h4>${user.fullname} (${user.username})</h4>
+                    <p><strong>نقش:</strong> ${user.role === 'admin' ? 'ادمین' : user.role === 'manager' ? 'مدیر' : 'کاربر'}</p>
+                    <p><strong>تلفن:</strong> ${user.phone}</p>
+                `;
+                container.appendChild(userElement);
+            });
+        }
+
+        // افزودن مدیر جدید
+        function addManager() {
+            const username = document.getElementById('manager-username').value.trim();
+            const password = document.getElementById('manager-password').value.trim();
+            const fullname = document.getElementById('manager-fullname').value.trim();
+            
+            if (!username || !password || !fullname) {
+                alert('تمام فیلدها الزامی هستند!');
+                return;
+            }
+            
+            if (users.some(u => u.username === username)) {
+                alert('این نام کاربری قبلاً وجود دارد!');
+                return;
+            }
+            
+            const newManager = {
+                id: Date.now(),
+                username: username,
+                password: password,
+                fullname: fullname,
+                phone: '09123456789', // شماره پیش‌فرض
+                role: 'manager',
+                createdAt: new Date().toISOString()
+            };
+            
+            users.push(newManager);
+            saveToStorage();
+            
+            // ایجاد کارت پیش‌فرض برای مدیر
+            createDefaultCard(newManager.id);
+            
+            document.getElementById('manager-username').value = '';
+            document.getElementById('manager-password').value = '';
+            document.getElementById('manager-fullname').value = '';
+            
+            loadManagersList();
+            alert('مدیر جدید با موفقیت اضافه شد.');
+        }
+
+        // بارگذاری لیست مدیران
+        function loadManagersList() {
+            const container = document.getElementById('managers-list');
+            container.innerHTML = '<h3>لیست مدیران فعلی:</h3>';
+            
+            const managers = users.filter(u => u.role === 'manager' || u.role === 'admin');
+            
+            if (managers.length === 0) {
+                container.innerHTML += '<p style="text-align: center; margin: 20px; color: var(--gray);">هیچ مدیری وجود ندارد.</p>';
+                return;
+            }
+            
+            managers.forEach(manager => {
+                const managerElement = document.createElement('div');
+                managerElement.className = 'user-item';
+                managerElement.style.margin = '10px 0';
+                managerElement.innerHTML = `
+                    <h4>${manager.fullname} (${manager.username})</h4>
+                    <p><strong>نقش:</strong> ${manager.role === 'admin' ? 'ادمین اصلی' : 'مدیر'}</p>
+                    <p><strong>تاریخ ایجاد:</strong> ${new Date(manager.createdAt).toLocaleDateString('fa-IR')}</p>
+                    ${manager.role !== 'admin' ? `<button class="btn btn-sm btn-danger" onclick="deleteUser(${manager.id})">حذف مدیر</button>` : ''}
+                `;
+                container.appendChild(managerElement);
+            });
+        }
+
+        // بارگذاری کارت‌ها برای ادمین
+        function loadAdminCards() {
+            const select = document.getElementById('admin-card-select');
+            select.innerHTML = '';
+            
+            cards.forEach(card => {
+                const option = document.createElement('option');
+                option.value = card.id;
+                const user = users.find(u => u.id === card.userId);
+                option.textContent = `${card.cardNumber} - ${user ? user.fullname : 'ناشناس'} - ${card.balance.toLocaleString('fa-IR')} تومان`;
+                select.appendChild(option);
+            });
+            
+            if (cards.length > 0) {
+                loadCardDetails();
+            }
+        }
+
+        // بارگذاری جزئیات کارت انتخاب شده
+        function loadCardDetails() {
+            const cardId = parseInt(document.getElementById('admin-card-select').value);
+            const card = cards.find(c => c.id === cardId);
+            
+            if (!card) {
+                document.getElementById('card-info').innerHTML = '<p>کارتی انتخاب نشده است.</p>';
+                return;
+            }
+            
+            const user = users.find(u => u.id === card.userId);
+            
+            document.getElementById('card-info').innerHTML = `
+                <p><strong>شماره کارت:</strong> ${card.cardNumber}</p>
+                <p><strong>نام صاحب کارت:</strong> ${user ? user.fullname : 'ناشناس'}</p>
+                <p><strong>موجودی فعلی:</strong> ${card.balance.toLocaleString('fa-IR')} تومان</p>
+                <p><strong>نام کارت:</strong> ${card.cardName}</p>
+                <p><strong>وضعیت:</strong> ${card.isActive ? 'فعال' : 'غیرفعال'}</p>
+                <p><strong>تاریخ ایجاد:</strong> ${new Date(card.createdAt).toLocaleDateString('fa-IR')}</p>
+            `;
+        }
+
+        // بروزرسانی موجودی کارت
+        function updateBalance() {
+            const cardId = parseInt(document.getElementById('admin-card-select').value);
+            const balanceChange = parseInt(document.getElementById('balance-change').value);
+            
+            if (isNaN(balanceChange)) {
+                alert('مبلغ تغییر باید یک عدد باشد!');
+                return;
+            }
+            
+            const card = cards.find(c => c.id === cardId);
+            
+            if (!card) {
+                alert('کارت پیدا نشد!');
+                return;
+            }
+            
+            const newBalance = card.balance + balanceChange;
+            
+            if (newBalance < 0) {
+                alert('موجودی نمی‌تواند منفی شود!');
+                return;
+            }
+            
+            card.balance = newBalance;
+            saveToStorage();
+            
+            loadCardDetails();
+            document.getElementById('balance-change').value = '';
+            alert(`موجودی کارت با موفقیت ${balanceChange > 0 ? 'افزایش' : 'کاهش'} یافت.`);
+        }
+
+        // بارگذاری کاربران برای مدیریت حقوق
+        function loadSalaryUsers() {
+            const select = document.getElementById('salary-user');
+            select.innerHTML = '<option value="">انتخاب کاربر...</option>';
+            
+            users.filter(u => u.role === 'user').forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.textContent = `${user.fullname} (${user.username})`;
+                select.appendChild(option);
+            });
+            
+            loadSalariesList();
+        }
+
+        // بارگذاری لیست حقوق
+        function loadSalariesList() {
+            const container = document.getElementById('salaries-list');
+            container.innerHTML = '<h3>حقوق تعیین شده:</h3>';
+            
+            let hasSalaries = false;
+            
+            users.filter(u => u.role === 'user').forEach(user => {
+                const salaryInfo = salaries[user.id] || { monthly: 0, received: 0, lastReceived: null };
+                
+                if (salaryInfo.monthly > 0) {
+                    hasSalaries = true;
+                    const salaryElement = document.createElement('div');
+                    salaryElement.className = 'user-item';
+                    salaryElement.style.margin = '10px 0';
+                    salaryElement.innerHTML = `
+                        <h4>${user.fullname}</h4>
+                        <p><strong>حقوق ماهانه:</strong> ${salaryInfo.monthly.toLocaleString('fa-IR')} تومان</p>
+                        <p><strong>دریافت شده:</strong> ${salaryInfo.received.toLocaleString('fa-IR')} تومان</p>
+                        <p><strong>باقیمانده:</strong> ${(salaryInfo.monthly - salaryInfo.received).toLocaleString('fa-IR')} تومان</p>
+                        ${salaryInfo.lastReceived ? `<p><strong>آخرین دریافت:</strong> ${new Date(salaryInfo.lastReceived).toLocaleDateString('fa-IR')}</p>` : ''}
+                    `;
+                    container.appendChild(salaryElement);
+                }
+            });
+            
+            if (!hasSalaries) {
+                container.innerHTML += '<p style="text-align: center; margin: 20px; color: var(--gray);">هیچ حقوقی تعیین نشده است.</p>';
+            }
+        }
+
+        // تنظیم حقوق کاربر
+        function setUserSalary() {
+            const userId = parseInt(document.getElementById('salary-user').value);
+            const monthlySalary = parseInt(document.getElementById('monthly-salary-amount').value);
+            
+            if (isNaN(userId) || userId <= 0) {
+                alert('لطفاً یک کاربر انتخاب کنید!');
+                return;
+            }
+            
+            if (isNaN(monthlySalary) || monthlySalary <= 0) {
+                alert('حقوق ماهانه باید عددی مثبت باشد!');
+                return;
+            }
+            
+            if (!salaries[userId]) {
+                salaries[userId] = {
+                    monthly: 0,
+                    received: 0,
+                    lastReceived: null
+                };
+            }
+            
+            salaries[userId].monthly = monthlySalary;
+            saveToStorage();
+            
+            document.getElementById('monthly-salary-amount').value = '';
+            loadSalariesList();
+            alert('حقوق کاربر با موفقیت تعیین شد.');
+        }
+
+        // دریافت حقوق توسط کاربر
+        function receiveSalary() {
+            if (!currentUser || currentUser.role !== 'user') return;
+            
+            if (!salaries[currentUser.id] || salaries[currentUser.id].monthly === 0) {
+                alert('برای شما حقوقی تعیین نشده است!');
+                return;
+            }
+            
+            const salaryInfo = salaries[currentUser.id];
+            const remaining = salaryInfo.monthly - salaryInfo.received;
+            
+            if (remaining <= 0) {
+                alert('شما تمام حقوق ماه جاری را دریافت کرده‌اید!');
+                return;
+            }
+            
+            if (!confirm(`آیا می‌خواهید ${remaining.toLocaleString('fa-IR')} تومان حقوق ماه جاری را دریافت کنید؟`)) {
+                return;
+            }
+            
+            // پیدا کردن کارت اول کاربر برای واریز حقوق
+            const userCards = cards.filter(c => c.userId === currentUser.id && c.isActive);
+            if (userCards.length === 0) {
+                alert('شما کارت فعالی برای دریافت حقوق ندارید!');
+                return;
+            }
+            
+            const primaryCard = userCards[0];
+            primaryCard.balance += remaining;
+            
+            // بروزرسانی اطلاعات حقوق
+            salaryInfo.received = salaryInfo.monthly;
+            salaryInfo.lastReceived = new Date().toISOString();
+            
+            saveToStorage();
+            loadDashboardData();
+            
+            // بروزرسانی نمایش حقوق در صفحه
+            document.getElementById('monthly-salary').textContent = salaryInfo.monthly.toLocaleString('fa-IR');
+            document.getElementById('received-salary').textContent = salaryInfo.received.toLocaleString('fa-IR');
+            document.getElementById('remaining-salary').textContent = '0';
+            
+            alert(`حقوق ماه جاری (${remaining.toLocaleString('fa-IR')} تومان) با موفقیت به کارت شما واریز شد.`);
+        }
+
+        // دریافت حقوق در صفحه حقوق
+        function loadSalaryPage() {
+            if (!currentUser) return;
+            
+            const salaryInfo = salaries[currentUser.id] || { monthly: 0, received: 0, lastReceived: null };
+            
+            document.getElementById('monthly-salary').textContent = salaryInfo.monthly.toLocaleString('fa-IR');
+            document.getElementById('received-salary').textContent = salaryInfo.received.toLocaleString('fa-IR');
+            document.getElementById('remaining-salary').textContent = (salaryInfo.monthly - salaryInfo.received).toLocaleString('fa-IR');
+        }
+
+        // مقداردهی اولیه سیستم
+        function initSystem() {
+            loadFromStorage();
+            
+            // ایجاد ادمین پیش‌فرض اگر وجود ندارد
+            if (users.length === 0) {
+                const defaultAdmin = {
+                    id: 1,
+                    username: 'admin',
+                    password: 'admin123',
+                    fullname: 'ادمین اصلی',
+                    phone: '09123456789',
+                    role: 'admin',
+                    createdAt: new Date().toISOString()
+                };
+                
+                users.push(defaultAdmin);
+                saveToStorage();
+                
+                // ایجاد کارت برای ادمین
+                createDefaultCard(defaultAdmin.id);
+                
+                // حذف این خط که اطلاعات ادمین را به کاربر نمایش می‌داد
+                // alert('اطلاعات ورود پیش‌فرض ایجاد شد:\nنام کاربری: admin\nرمز عبور: admin123');
+            }
+        }
+
+        // مقداردهی اولیه سیستم
+        window.onload = function() {
+            initSystem();
+            
+            // اگر کاربر قبلاً وارد شده باشد، به داشبورد مناسب هدایت شود
+            if (currentUser) {
+                if (currentUser.role === 'admin' || currentUser.role === 'manager') {
+                    showPage('admin-dashboard');
+                } else {
+                    showPage('user-dashboard');
+                }
+            }
+        };
+    </script>
+</body>
+</html>
